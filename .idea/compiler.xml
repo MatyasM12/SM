@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="CompilerConfiguration">
+    <bytecodeTargetLevel>
+      <module name="music.backend.generated" target="1.8" />
+      <module name="music.backend.main" target="1.8" />
+      <module name="music.backend.test" target="1.8" />
+      <module name="music.frontend.main" target="1.8" />
+      <module name="music.frontend.test" target="1.8" />
+      <module name="SM.SM.main" target="1.8" />
+      <module name="SM.SM.test" target="1.8" />
+    </bytecodeTargetLevel>
+  </component>
+</project>

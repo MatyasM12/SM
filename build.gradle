@@ -1,0 +1,71 @@
+buildscript {
+    ext {
+        springBootVersion = '1.5.6.RELEASE'
+    }
+
+    repositories {
+        mavenLocal()
+        jcenter()
+        maven {
+            url "https://plugins.gradle.org/m2/"
+        }
+    }
+
+    dependencies {
+        classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
+        classpath("org.jfrog.buildinfo:build-info-extractor-gradle:4.3.0")
+    }
+}
+
+if (project.hasProperty('projVersion')) {
+    version = project.projVersion
+} else {
+    version = '1.0.0'
+}
+
+group 'SM'
+version '1.0-SNAPSHOT'
+
+repositories {
+    mavenCentral()
+}
+
+subprojects {
+    version = rootProject.version
+
+    repositories {
+        mavenLocal()
+        maven {
+            url "https://plugins.gradle.org/m2/"
+        }
+        jcenter()
+    }
+
+    apply plugin: 'application'
+    apply plugin: 'idea'
+    apply plugin: 'org.springframework.boot'
+    apply plugin: 'jacoco'
+
+    mainClassName = 'com.bosch.Application'
+
+    compileJava.options.encoding = 'UTF-8'
+    compileTestJava.options.encoding = 'UTF-8'
+
+    repositories {
+        mavenLocal()
+        jcenter()
+    }
+
+    tasks.withType(Test) {
+        // redirect all coverage data to one file
+        // ... needs cleaning the data prior to the build to avoid accumulating coverage data of different runs.
+        // see `task cleanJacoco`
+        jacoco {
+            destinationFile = file("$rootProject.buildDir/jacoco/test.exec")
+        }
+    }
+}
+
+task wrapper(type: Wrapper) {
+    gradleVersion = '4.1'
+}

@@ -1,0 +1,80 @@
+buildscript {
+    repositories {
+        jcenter()
+        maven { url "https://plugins.gradle.org/m2/" }
+        maven { url "http://repo.spring.io/libs-milestone" }
+    }
+}
+
+plugins {
+    id 'org.jetbrains.kotlin.jvm' version '1.3.10'
+    id 'net.ltgt.apt' version '0.15'
+}
+apply plugin: 'kotlin'
+group 'SM'
+version '1.0-SNAPSHOT'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    compile "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
+}
+
+compileKotlin {
+    kotlinOptions.jvmTarget = "1.8"
+}
+compileTestKotlin {
+    kotlinOptions.jvmTarget = "1.8"
+}
+
+dependencies {
+    compile project(":frontend")
+    testCompile group: 'junit', name: 'junit', version: '4.12'
+    compile group: 'org.springframework.boot', name: 'spring-boot-starter-web'
+    compile group: 'org.springframework.boot', name: 'spring-boot-starter-data-jpa'
+    compile group: 'org.springframework.boot', name: 'spring-boot-starter-security'
+    compile group: 'org.springframework.boot', name: 'spring-boot-starter-thymeleaf'
+    compile group: 'org.thymeleaf', name: 'thymeleaf', version: '3.0.9.RELEASE'
+    compile group: 'org.thymeleaf', name: 'thymeleaf-spring4', version: '3.0.9.RELEASE'
+    compile group: 'nz.net.ultraq.thymeleaf', name: 'thymeleaf-layout-dialect', version: '2.3.0'
+    compile group: 'org.springframework.cloud', name: 'spring-cloud-spring-service-connector', version: '1.2.3.RELEASE'
+    compile group: 'org.springframework.cloud', name: 'spring-cloud-cloudfoundry-connector', version: '1.2.3.RELEASE'
+    compile group: 'org.springframework.boot', name: 'spring-boot-starter-mail'
+    compile group: 'org.apache.commons', name: 'commons-email', version: '1.5'
+    compile group: 'mysql', name: 'mysql-connector-java'
+    compile group: 'org.mapstruct', name: 'mapstruct-jdk8', version: '1.2.0.Final'
+    compile group: 'org.apache.tika', name: 'tika-parsers', version: '1.18'
+    compile group: 'org.flywaydb', name: 'flyway-core', version: '5.0.7'
+    compile group: 'org.hibernate', name: 'hibernate-envers', version: '5.0.12.Final'
+    compile group: 'org.projectlombok', name: 'lombok', version: '1.18.0'
+    compile group: 'net.sourceforge.nekohtml', name: 'nekohtml', version: '1.9.22'
+    apt group: 'org.mapstruct', name: 'mapstruct-processor', version: '1.2.0.Final'
+    apt group: 'org.projectlombok', name: 'lombok', version: '1.18.0'
+    testCompile group: 'org.springframework.boot', name: 'spring-boot-starter-test'
+    testCompile group: 'org.springframework.security', name: 'spring-security-test', version: '4.0.2.RELEASE'
+    testCompile group: 'com.h2database', name: 'h2', version: '1.4.192'
+
+}
+
+sourceSets {
+    generated {
+        compileClasspath = configurations.generatedCompile
+    }
+    main {
+        kotlin.srcDir "${buildDir}/generated/source/apt/main"
+        resources {
+            srcDir file("${project(":frontend").buildDir}/generated-resources")
+        }
+    }
+}
+processResources.dependsOn ':frontend:build'
+compileKotlin.dependsOn compileGeneratedKotlin
+
+group 'SM'
+
+jar {
+    baseName = 'SM'
+    version = version
+}

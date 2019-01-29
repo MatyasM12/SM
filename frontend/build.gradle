@@ -1,0 +1,81 @@
+buildscript {
+    repositories {
+        maven {
+            url "https://plugins.gradle.org/m2/"
+        }
+    }
+    dependencies {
+        classpath 'com.moowork.gradle:gradle-node-plugin:1.2.0'
+    }
+}
+plugins {
+    id 'war'
+}
+
+ext {
+    vueOutput = "${project.buildDir}/generated-resources"
+    utilitySource = "${project.projectDir}/src/assets/utilities"
+    distSource = "${project.projectDir}/dist"
+    cssSource = "${project.projectDir}/dist/css"
+    jsSource = "${project.projectDir}/dist/js"
+
+}
+apply plugin: 'com.moowork.node'
+
+node {
+    download = true
+    version = '9.5.0'
+    npmVersion = '6.6.0-next.0'
+}
+
+task ngBuild(type: NpmTask, dependsOn: ['npmInstall']) {
+    args = ['run', 'build']
+    inputs.file("${projectDir}/package.json")
+    inputs.dir("${projectDir}/src")
+    outputs.dir(file("${project.buildDir}/generated-resources"))
+    File sourceIndexFile = new File(vueOutput, 'static/index.html')
+    File targetIndexFile = new File(vueOutput, 'templates/index.html')
+
+    doFirst {
+        sourceIndexFile.parentFile.mkdirs()
+    }
+
+    doLast {
+        copy {
+            println 'copying utility source'
+            from utilitySource
+            into vueOutput + '/static/utilities'
+        }
+
+        copy {
+            from distSource
+            into vueOutput + '/templates'
+            include '*.html'
+        }
+
+        copy {
+            from cssSource
+            into vueOutput + '/static/css'
+        }
+        copy {
+            println "jsSource copy ${jsSource}"
+            from jsSource
+            into vueOutput + '/static/js'
+        }
+
+        boolean moved = sourceIndexFile.renameTo(targetIndexFile)
+    }
+}
+
+group 'SM'
+version '1.0-SNAPSHOT'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    testCompile group: 'junit', name: 'junit', version: '4.11'
+}
+
+build.dependsOn ngBuild
